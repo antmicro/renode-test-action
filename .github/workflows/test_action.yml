@@ -1,0 +1,17 @@
+name: Test action
+ 
+on: [push,pull_request,workflow_dispatch]
+
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./test-in-renode
+        with:
+         tests-to-run:  __tests__/hello_world.robot
+
+      - name: Renode is installed
+        run: __tests__/check_renode_install.sh || exit 1
+        shell: bash
+        
