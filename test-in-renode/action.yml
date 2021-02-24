@@ -1,0 +1,20 @@
+name: 'Test in Renode'
+description: 'This action runs selected robot test suites in Renode and generates artifacts'
+author: 'Antmicro'
+inputs:
+  renode-version:
+    description: 'Renode version'
+    required: true
+    default: 'latest'
+  tests-to-run:
+    description: 'Robot framework test paths'
+    required: true
+    default: 'tests/**/*.robot'
+runs:
+  using: "composite"
+  steps:
+    - run: $GITHUB_ACTION_PATH/run_renode_test.sh
+      shell: bash
+      env:
+        RENODE_VERSION: ${{ inputs.renode-version }}
+        TESTS_TO_RUN: ${{ inputs.tests-to-run }}
