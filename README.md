@@ -13,7 +13,7 @@ See [action.yml](test-in-renode/action.yml)
 
 ```yaml
 steps:
-- uses: antmicro/renode-actions/test-in-renode@master
+- uses: antmicro/renode-actions/test-in-renode@main
   with:
     renode-version: 'latest'
     tests-to-run: 'tests/**/*.robot' 
