@@ -1,7 +1,7 @@
 #!/bin/sh
 
 set -e
-if ! __tests__/check_renode_install.sh;
+if ! $GITHUB_ACTION_PATH/../__tests__/check_renode_install.sh;
 then
     RENODE_DIR=$(mktemp -d)
     echo "RENODE_DIR=$RENODE_DIR" >> $GITHUB_ENV
