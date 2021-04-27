@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 if ! $GITHUB_ACTION_PATH/../__tests__/check_renode_install.sh;
@@ -14,4 +14,17 @@ then
     pip install -q -r $RENODE_DIR/tests/requirements.txt --no-warn-script-location
 fi
 
+# path to a problem matcher file needs
+# to be accessible to the runner outside the container
+MATCHER_PATH="$(dirname $BASH_SOURCE)"
+if [ -d "/github/workflow" ]
+then
+    # we seem to be in the docker environment
+    MATCHER_PATH="$RUNNER_TEMP/_github_workflow/$MATCHER_PATH"
+fi
+
+echo "::add-matcher::$MATCHER_PATH/renode-problem-matcher.json"
+
 $RENODE_DIR/test.sh $TESTS_TO_RUN
+
+echo "::remove-matcher owner=test-in-renode::"

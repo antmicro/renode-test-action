@@ -1,0 +1,13 @@
+{
+    "problemMatcher": [
+        {
+            "owner": "test-in-renode",
+            "pattern": [
+                {
+                    "regexp": "^\\+\\+\\+\\+\\+ Finished test '([^']+)' in [\\.0-9]+ seconds with status .*failed.*$",
+                    "message": 1
+                },
+            ]
+        }
+    ]
+}
