@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
-      - uses: ./test-in-renode
+      - uses: ./
         with:
          tests-to-run:  __tests__/hello_world.robot
 
