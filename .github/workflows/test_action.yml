@@ -1,5 +1,5 @@
 name: Test action
- 
+
 on: [push,pull_request,workflow_dispatch]
 
 jobs:
@@ -12,6 +12,6 @@ jobs:
          tests-to-run:  __tests__/hello_world.robot
 
       - name: Renode is installed
-        run: __tests__/check_renode_install.sh || exit 1
+        run: src/check_renode_install.sh || exit 1
         shell: bash
-        
+

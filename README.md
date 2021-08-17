@@ -7,7 +7,7 @@ A GitHub Action for testing software in the Renode environment.
 
 ![Test action](https://github.com/antmicro/renode-actions/workflows/Test%20action/badge.svg)
 
-See [action.yml](test-in-renode/action.yml)
+See [action.yml](action.yml)
 
 ```yaml
 steps:
