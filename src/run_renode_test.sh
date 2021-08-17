@@ -3,7 +3,7 @@
 set -e
 if ! $GITHUB_ACTION_PATH/src/check_renode_install.sh;
 then
-    RENODE_DIR=$(mktemp -d)
+    export RENODE_DIR=$(mktemp -d)
     echo "RENODE_DIR=$RENODE_DIR" >> $GITHUB_ENV
     if ! wget -q https://dl.antmicro.com/projects/renode/builds/renode-$RENODE_VERSION.linux-portable.tar.gz;
     then
@@ -12,6 +12,11 @@ then
     fi
     tar -xzf renode-$RENODE_VERSION.linux-portable.tar.gz -C $RENODE_DIR --strip 1
     pip install -q -r $RENODE_DIR/tests/requirements.txt --no-warn-script-location
+    if ! $GITHUB_ACTION_PATH/src/check_renode_install.sh;
+    then
+        echo "Tried to install Renode, but failed. Please inspect the log"
+        exit 1
+    fi
 fi
 
 # path to a problem matcher file needs
