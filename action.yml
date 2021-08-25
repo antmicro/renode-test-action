@@ -1,6 +1,11 @@
 name: 'Run tests in Renode'
 description: 'This action runs selected robot test suites in Renode and generates artifacts'
 author: 'Antmicro'
+
+branding:
+  color: 'blue'
+  icon: 'play-circle'
+
 inputs:
   renode-version:
     description: 'Renode version'
