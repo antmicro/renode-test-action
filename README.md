@@ -5,13 +5,13 @@ A GitHub Action for testing software in the Renode environment.
 
 ## Usage
 
-![Test action](https://github.com/antmicro/renode-actions/workflows/Test%20action/badge.svg)
+![Test action](https://github.com/antmicro/renode-test-action/workflows/Test%20action/badge.svg)
 
 See [action.yml](action.yml)
 
 ```yaml
 steps:
-- uses: antmicro/renode-actions/test-in-renode@main
+- uses: antmicro/renode-test-action@v1.0.0
   with:
     renode-version: 'latest'
     tests-to-run: 'tests/**/*.robot' 
