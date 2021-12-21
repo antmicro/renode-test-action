@@ -31,6 +31,11 @@ fi
 
 echo "::add-matcher::$MATCHER_PATH/renode-problem-matcher.json"
 
-$RENODE_DIR/test.sh $TESTS_TO_RUN
+if [ -z "$TESTS_TO_RUN" ]
+then
+    echo "No tests provided, Renode is installed to $RENODE_DIR"
+else
+    $RENODE_DIR/test.sh $TESTS_TO_RUN
+fi
 
 echo "::remove-matcher owner=test-in-renode::"

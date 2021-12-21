@@ -13,8 +13,7 @@ inputs:
     default: 'latest'
   tests-to-run:
     description: 'Robot framework test paths'
-    required: true
-    default: 'tests/**/*.robot'
+    required: false
   renode-path:
     description: 'Path for Renode installation. May be used to cache Renode between jobs'
     required: false
