@@ -15,6 +15,10 @@ inputs:
     description: 'Robot framework test paths'
     required: true
     default: 'tests/**/*.robot'
+  renode-path:
+    description: 'Path for Renode installation. May be used to cache Renode between jobs'
+    required: false
+    default: '${{ runner.temp }}/renode'
 runs:
   using: "composite"
   steps:
@@ -23,3 +27,4 @@ runs:
       env:
         RENODE_VERSION: ${{ inputs.renode-version }}
         TESTS_TO_RUN: ${{ inputs.tests-to-run }}
+        RENODE_DIR: ${{ inputs.renode-path }}
