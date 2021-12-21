@@ -12,13 +12,18 @@ then
         exit 1
     fi
     tar -xzf renode-$RENODE_VERSION.linux-portable.tar.gz -C $RENODE_DIR --strip 1
-    pip install -q -r $RENODE_DIR/tests/requirements.txt --no-warn-script-location
     if ! $GITHUB_ACTION_PATH/src/check_renode_install.sh;
     then
         echo "Tried to install Renode, but failed. Please inspect the log"
         exit 1
     fi
 fi
+
+# Install PIP requirements unconditionally.
+# This is usable if Renode comes from a GH Action cache - users
+# can cache RENODE_DIR to pass it between jobs, but Python dependencies
+# are a bit more difficult to locate and cache.
+pip install -q -r $RENODE_DIR/tests/requirements.txt --no-warn-script-location
 
 # path to a problem matcher file needs
 # to be accessible to the runner outside the container
