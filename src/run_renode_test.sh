@@ -6,7 +6,7 @@ then
     # RENODE_DIR should be set by the action parameter
     mkdir -p $RENODE_DIR
     echo "RENODE_DIR=$RENODE_DIR" >> $GITHUB_ENV
-    if ! wget -q https://dl.antmicro.com/projects/renode/builds/renode-$RENODE_VERSION.linux-portable.tar.gz;
+    if ! wget --progress=dot:giga https://dl.antmicro.com/projects/renode/builds/renode-$RENODE_VERSION.linux-portable.tar.gz;
     then
         echo "There was an error when downloading the package. The provided Renode version might be wrong: $RENODE_VERSION"
         exit 1
