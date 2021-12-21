@@ -1,7 +1,12 @@
 # Test in Renode GitHub Action
+
 Copyright (c) 2021 [Antmicro](https://www.antmicro.com)
 
-A GitHub Action for testing software in the Renode environment.
+A GitHub Action for testing embedded software in the [Renode](https://about.renode.io/) simulation environment using the [Robot Framework](http://robotframework.org/).
+
+See how to use Robot with Renode in the [relevant chapter in our documentation](https://renode.readthedocs.io/en/latest/introduction/testing.html).
+
+This action allows you to write a test in Robot using Renode's predefined keyword library and execute them automatically in GitHub Actions, which results in very nice test logs and summaries.
 
 ## Usage
 
