@@ -3,7 +3,8 @@
 set -e
 if ! $GITHUB_ACTION_PATH/src/check_renode_install.sh;
 then
-    export RENODE_DIR=$(mktemp -d)
+    # RENODE_DIR should be set by the action parameter
+    mkdir -p $RENODE_DIR
     echo "RENODE_DIR=$RENODE_DIR" >> $GITHUB_ENV
     if ! wget -q https://dl.antmicro.com/projects/renode/builds/renode-$RENODE_VERSION.linux-portable.tar.gz;
     then
