@@ -25,16 +25,7 @@ fi
 # are a bit more difficult to locate and cache.
 pip install -q -r $RENODE_DIR/tests/requirements.txt --no-warn-script-location
 
-# path to a problem matcher file needs
-# to be accessible to the runner outside the container
-MATCHER_PATH="$(dirname $BASH_SOURCE)"
-if [ -d "/github/workflow" ]
-then
-    # we seem to be in the docker environment
-    MATCHER_PATH="$RUNNER_TEMP/_github_workflow/$MATCHER_PATH"
-fi
-
-echo "::add-matcher::$MATCHER_PATH/renode-problem-matcher.json"
+echo "::add-matcher::$GITHUB_ACTION_PATH/src/renode-problem-matcher.json"
 
 if [ -z "$TESTS_TO_RUN" ]
 then
