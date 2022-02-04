@@ -30,6 +30,19 @@ fi
 
 echo "::add-matcher::$MATCHER_PATH/renode-problem-matcher.json"
 
-$RENODE_DIR/test.sh $TESTS_TO_RUN
+if [ -f $RENODE_DIR/renode-test ]
+then
+    # current version of the Renode portable package
+    # contains the `renode-test` script
+    $RENODE_DIR/renode-test $TESTS_TO_RUN
+elif [ -f $RENODE_DIR/test.sh ]
+then
+    # older versions were shipped with
+    # the `test.sh` script
+    $RENODE_DIR/test.sh $TESTS_TO_RUN
+else
+    echo "Could not find the test script"
+    exit 1
+fi
 
 echo "::remove-matcher owner=test-in-renode::"
