@@ -44,7 +44,7 @@ else
     then
         # current version of the Renode portable package
         # contains the `renode-test` script
-        $RENODE_DIR/renode-test $TESTS_TO_RUN
+        $RENODE_DIR/renode-test --show-log $TESTS_TO_RUN
     elif [ -f $RENODE_DIR/test.sh ]
     then
         # older versions were shipped with
