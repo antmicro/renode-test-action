@@ -12,7 +12,7 @@ jobs:
         uses: ./
 
       - name: Verify if Renode is persistent
-        run: src/check_renode_install.sh || exit 1
+        run: renode-run exec -- --version | grep "Renode found" || exit 1
         shell: bash
 
       - name: Run sample test

@@ -1,6 +1,6 @@
 # Test in Renode GitHub Action
 
-Copyright (c) 2021 [Antmicro](https://www.antmicro.com)
+Copyright (c) 2022 [Antmicro](https://www.antmicro.com)
 
 A GitHub Action for testing embedded software in the [Renode](https://about.renode.io/) simulation environment using the [Robot Framework](http://robotframework.org/).
 
@@ -35,19 +35,19 @@ jobs:
      - name: Prepare Renode settings
        run: |
          echo "RENODE_VERSION=latest" >> $GITHUB_ENV
-         echo "RENODE_DIR=/some/directory" >> $GITHUB_ENV
+         echo "RENODE_RUN_DIR=/some/directory" >> $GITHUB_ENV
 
      - name: Download Renode
        uses: antmicro/renode-test-action@v2.0.0
        with:
         renode-version: '${{ env.RENODE_VERSION }}'
-        renode-path: '${{ env.RENODE_DIR }}'
+        renode-run-path: '${{ env.RENODE_RUN_DIR }}'
 
      - name: Cache Renode installation
        uses: actions/cache@v2
        id: cache-renode
        with:
-         path: '${{ env.RENODE_DIR }}'
+         path: '${{ env.RENODE_RUN_DIR }}'
          key: cache-renode-${{ env.RENODE_VERSION }}
 
   second-job:
@@ -55,13 +55,13 @@ jobs:
      - name: Prepare Renode settings
        run: |
          echo "RENODE_VERSION=latest" >> $GITHUB_ENV
-         echo "RENODE_DIR=/some/directory" >> $GITHUB_ENV
+         echo "RENODE_RUN_DIR=/some/directory" >> $GITHUB_ENV
 
      - name: Restore Renode
        uses: actions/cache@v2
        id: cache-renode
        with:
-         path: '${{ env.RENODE_DIR }}'
+         path: '${{ env.RENODE_RUN_DIR }}'
          key: cfu-cache-renode-${{ env.RENODE_VERSION }}
 
      - name: Run tests
@@ -69,5 +69,5 @@ jobs:
        with:
          renode-version: '${{ env.RENODE_VERSION }}'
          tests-to-run: tests-*.robot
-         renode-path: '${{ env.RENODE_DIR }}'
+         renode-run-path: '${{ env.RENODE_RUN_DIR }}'
 ```
