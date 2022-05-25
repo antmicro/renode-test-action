@@ -18,6 +18,10 @@ inputs:
     description: 'Path for renode-run artifacts. May be used to cache Renode between jobs'
     required: false
     default: '${{ runner.temp }}/renode-run'
+  renode-arguments:
+    description: 'Additional arguments passed to renode-test'
+    required: false
+    default: ''
 runs:
   using: "composite"
   steps:
@@ -27,3 +31,4 @@ runs:
         RENODE_VERSION: ${{ inputs.renode-version }}
         TESTS_TO_RUN: ${{ inputs.tests-to-run }}
         RENODE_RUN_DIR: ${{ inputs.renode-run-path }}
+        RENODE_ARGUMENTS: ${{ inputs.renode-arguments }}
