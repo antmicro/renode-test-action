@@ -15,7 +15,7 @@ if [ -z "$TESTS_TO_RUN" ]
 then
     echo "No tests provided, renode-run artifacts are installed to $RENODE_RUN_DIR"
 else
-    renode-run -a $RENODE_RUN_DIR test -- "${renode_arguments[@]}" $TESTS_TO_RUN
+    renode-run -a $RENODE_RUN_DIR test -- -r $ARTIFACTS_PATH "${renode_arguments[@]}" $TESTS_TO_RUN
 fi
 
 echo "::remove-matcher owner=test-in-renode::"
