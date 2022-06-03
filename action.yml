@@ -26,6 +26,10 @@ inputs:
     description: 'Path where renode-test artifacts should be stored'
     required: false
     default: '.'
+  gather-execution-metrics:
+    description: 'Gather execution metrics for executed binaries'
+    required: false
+    default: 'no'
 runs:
   using: "composite"
   steps:
@@ -37,3 +41,4 @@ runs:
         RENODE_RUN_DIR: ${{ inputs.renode-run-path }}
         RENODE_ARGUMENTS: ${{ inputs.renode-arguments }}
         ARTIFACTS_PATH: ${{ inputs.artifacts-path }}
+        EXECUTION_METRICS: ${{ inputs.gather-execution-metrics }}
