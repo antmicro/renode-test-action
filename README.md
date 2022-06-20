@@ -2,6 +2,8 @@
 
 Copyright (c) 2022 [Antmicro](https://www.antmicro.com)
 
+[![View on Antmicro Open Source Portal](https://img.shields.io/badge/View%20on-Antmicro%20Open%20Source%20Portal-332d37?style=flat-square)](https://opensource.antmicro.com/projects/renode-test-action) 
+
 A GitHub Action for testing embedded software in the [Renode](https://about.renode.io/) simulation environment using the [Robot Framework](http://robotframework.org/).
 
 See how to use Robot with Renode in the [relevant chapter in our documentation](https://renode.readthedocs.io/en/latest/introduction/testing.html).
