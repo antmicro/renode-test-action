@@ -18,7 +18,7 @@ See [action.yml](action.yml)
 
 ```yaml
 steps:
-- uses: antmicro/renode-test-action@v2.0.0
+- uses: antmicro/renode-test-action@v3.0.0
   with:
     renode-version: 'latest'
     tests-to-run: 'tests/**/*.robot'
@@ -40,7 +40,7 @@ jobs:
          echo "RENODE_RUN_DIR=/some/directory" >> $GITHUB_ENV
 
      - name: Download Renode
-       uses: antmicro/renode-test-action@v2.0.0
+       uses: antmicro/renode-test-action@v3.0.0
        with:
         renode-version: '${{ env.RENODE_VERSION }}'
         renode-run-path: '${{ env.RENODE_RUN_DIR }}'
@@ -67,7 +67,7 @@ jobs:
          key: cfu-cache-renode-${{ env.RENODE_VERSION }}
 
      - name: Run tests
-       uses: antmicro/renode-test-action@v2.0.0
+       uses: antmicro/renode-test-action@v3.0.0
        with:
          renode-version: '${{ env.RENODE_VERSION }}'
          tests-to-run: tests-*.robot
