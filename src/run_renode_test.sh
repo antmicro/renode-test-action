@@ -27,11 +27,14 @@ renode-run -a $RENODE_RUN_DIR download -d $RENODE_VERSION
 
 echo "::add-matcher::$GITHUB_ACTION_PATH/src/renode-problem-matcher.json"
 
+TEST_RESULT=0
+
 if [ -z "$TESTS_TO_RUN" ]
 then
     echo "No tests provided, renode-run artifacts are installed to $RENODE_RUN_DIR"
 else
     renode-run -a $RENODE_RUN_DIR test -- -r $ARTIFACTS_PATH "${renode_arguments[@]}" $TESTS_TO_RUN
+    TEST_RESULT=$?
 fi
 
 echo "::remove-matcher owner=test-in-renode::"
@@ -63,3 +66,5 @@ then
     # Deactivate virtualenv
     deactivate
 fi
+
+exit $TEST_RESULT
