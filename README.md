@@ -1,8 +1,8 @@
 # Test in Renode GitHub Action
 
-Copyright (c) 2022 [Antmicro](https://www.antmicro.com)
+Copyright (c) 2024 [Antmicro](https://www.antmicro.com)
 
-[![View on Antmicro Open Source Portal](https://img.shields.io/badge/View%20on-Antmicro%20Open%20Source%20Portal-332d37?style=flat-square)](https://opensource.antmicro.com/projects/renode-test-action) 
+[![View on Antmicro Open Source Portal](https://img.shields.io/badge/View%20on-Antmicro%20Open%20Source%20Portal-332d37?style=flat-square)](https://opensource.antmicro.com/projects/renode-test-action)
 
 A GitHub Action for testing embedded software in the [Renode](https://about.renode.io/) simulation environment using the [Robot Framework](http://robotframework.org/).
 
@@ -18,7 +18,7 @@ See [action.yml](action.yml)
 
 ```yaml
 steps:
-- uses: antmicro/renode-test-action@v3.0.0
+- uses: antmicro/renode-test-action@v3.1.0
   with:
     renode-version: 'latest'
     tests-to-run: 'tests/**/*.robot'
@@ -40,7 +40,7 @@ jobs:
          echo "RENODE_RUN_DIR=/some/directory" >> $GITHUB_ENV
 
      - name: Download Renode
-       uses: antmicro/renode-test-action@v3.0.0
+       uses: antmicro/renode-test-action@v3.1.0
        with:
         renode-version: '${{ env.RENODE_VERSION }}'
         renode-run-path: '${{ env.RENODE_RUN_DIR }}'
@@ -67,7 +67,7 @@ jobs:
          key: cfu-cache-renode-${{ env.RENODE_VERSION }}
 
      - name: Run tests
-       uses: antmicro/renode-test-action@v3.0.0
+       uses: antmicro/renode-test-action@v3.1.0
        with:
          renode-version: '${{ env.RENODE_VERSION }}'
          tests-to-run: tests-*.robot
