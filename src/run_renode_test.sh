@@ -1,7 +1,7 @@
 #!/bin/bash
 
 parse_boolean() {
-    arg=${1,,}
+    arg="$(echo "$1" | tr '[:upper:]' '[:lower:]')"
     case "$arg" in
         "true" | "yes") return 0 ;;
         "false" | "no") return 1 ;;
