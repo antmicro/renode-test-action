@@ -4,7 +4,10 @@ on: [push,pull_request,workflow_dispatch]
 
 jobs:
   test:
-    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-13]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
 
@@ -19,3 +22,8 @@ jobs:
         uses: ./
         with:
            tests-to-run:  __tests__/hello_world.robot
+
+      - name: Verify that renode-test also works under CMD/PowerShell on Windows
+        run: renode-test __tests__/hello_world.robot
+        shell: cmd
+        if: ${{ runner.os == 'Windows' }}
