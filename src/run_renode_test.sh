@@ -59,7 +59,7 @@ then
         fname=$(basename $fpath)
         METRICS_OUTPUT="$METRICS_ARTIFACTS/$fname"
         mkdir $METRICS_OUTPUT
-        $METRICS_VISUALIZER -o $METRICS_OUTPUT $fpath
+        $METRICS_VISUALIZER --no-dialogs -o $METRICS_OUTPUT $fpath
     done
 
     # Deactivate virtualenv

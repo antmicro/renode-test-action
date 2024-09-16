@@ -31,6 +31,7 @@ steps:
 * `tests-to-run` - path to the Robot files you want to execute.
 * `renode-arguments` - optional, additional arguments passed to Renode. See [Renode README](https://github.com/renode/renode) for details. Default: no additional arguments.
 * `artifacts-path` - optional, path where  test artifacts should be stored. This includes Robot logs and HTML reports. Default: current directory.
+* `gather-execution-metrics` - optional, whether to gather and visualize execution metrics. Default: no.
 
 ## Using cache
 
