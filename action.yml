@@ -7,17 +7,17 @@ branding:
   icon: 'play-circle'
 
 inputs:
-  renode-version:
-    description: 'Renode version'
+  renode-revision:
+    description: 'Renode git revision (can be a branch name, tag, commit sha, etc)'
     required: true
-    default: 'latest'
+    default: 'master'
+  renode-repository:
+    description: 'Renode git repository'
+    required: true
+    default: 'https://github.com/renode/renode'
   tests-to-run:
     description: 'Robot framework test paths'
     required: false
-  renode-run-path:
-    description: 'Path for renode-run artifacts. May be used to cache Renode between jobs'
-    required: false
-    default: '${{ runner.temp }}/renode-run'
   renode-arguments:
     description: 'Additional arguments passed to renode-test'
     required: false
@@ -33,12 +33,101 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - id: get-renode-rev
+      run: |
+        git clone "${{ inputs.renode-repository }}" renode
+        git -C renode checkout "${{ inputs.renode-revision }}" --
+        rev="$(git -C renode rev-parse @)"
+        action_rev="$(git -C $GITHUB_ACTION_PATH rev-parse @)"
+        echo "renode-rev=$rev" >> "$GITHUB_OUTPUT"
+        echo "action-rev=$action_rev" >> "$GITHUB_OUTPUT"
+        mv renode "renode-$rev-cloned"
+      shell: bash
+      working-directory: ${{ runner.temp }}
+    - uses: actions/cache/restore@v4
+      id: restore-cache
+      with:
+        path: ${{ runner.temp }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}
+        key: renode-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-renode-rev.outputs.renode-rev }}-${{ steps.get-renode-rev.outputs.action-rev }}
+    # Remove the just-cloned source if a cached build was found
+    - run: |
+        rm -rf renode-${{ steps.get-renode-rev.outputs.renode-rev }}-cloned
+      shell: bash
+      working-directory: ${{ runner.temp }}
+      if: ${{ steps.restore-cache.outputs.cache-hit == 'true' }}
+    - run: |
+        mv renode-${{ steps.get-renode-rev.outputs.renode-rev }}-cloned renode-${{ steps.get-renode-rev.outputs.renode-rev }}
+        cd renode-${{ steps.get-renode-rev.outputs.renode-rev }}
+        echo Building "${{ inputs.renode-repository }}" at "${{ inputs.renode-revision }} (${{ steps.get-renode-rev.outputs.renode-rev }})"
+        git submodule update --init --recursive --depth=1
+      shell: bash
+      working-directory: ${{ runner.temp }}
+      if: ${{ steps.restore-cache.outputs.cache-hit != 'true' }}
+    - name: Install dependencies (Linux)
+      run: |
+        sudo apt-get -qqy update
+        sudo apt-get -y install --no-install-recommends mono-complete policykit-1 libgtk2.0-dev uml-utilities gtk-sharp2
+      shell: bash
+      if: ${{ runner.os == 'Linux' }}
+    - name: Build Renode (Mono)
+      run: |
+        ./build.sh
+        # delete some unneeded dirs to slim down the cache entry
+        find . -name .git -exec rm -rf '{}' '+'
+        find lib src '(' -name bin -or -name obj ')' -exec rm -rf '{}' '+'
+      shell: bash
+      working-directory: ${{ runner.temp }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}
+      if: ${{ runner.os != 'Windows' && steps.restore-cache.outputs.cache-hit != 'true' }}
+    # For Windows, build and extract a package to generate the wrapper batch scripts
+    - name: Build Renode (.NET Framework)
+      run: |
+        cd renode-${{ steps.get-renode-rev.outputs.renode-rev }}
+        curl https://repo.msys2.org/msys/x86_64/zip-3.0-3-x86_64.pkg.tar.xz | tar xOJ usr/bin/zip.exe > zip.exe
+        msbuild="$(vswhere -latest -requires Microsoft.Component.MSBuild -find 'MSBuild\**\Bin\MSBuild.exe' | tr '\\' '/')"
+        export PATH="$PATH:$(cygpath "$(dirname "$msbuild")"):$PWD"
+        export MSYS=winsymlinks:nativestrict
+        ./build.sh -p
+        mv output/packages/*.zip ../renode.zip
+        cd ..
+        rm -rf renode-*
+        unzip renode.zip
+        rm renode.zip
+        mv renode* renode-${{ steps.get-renode-rev.outputs.renode-rev }}
+        # Create a bash wrapper script so that renode-test can be run from both bash and cmd
+        cat $GITHUB_ACTION_PATH/src/renode_test_override.sh > renode-${{ steps.get-renode-rev.outputs.renode-rev }}/bin/renode-test
+      shell: bash
+      working-directory: ${{ runner.temp }}
+      if: ${{ runner.os == 'Windows' && steps.restore-cache.outputs.cache-hit != 'true' }}
+    - uses: actions/cache/save@v4
+      with:
+        path: ${{ runner.temp }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}
+        key: renode-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-renode-rev.outputs.renode-rev }}-${{ steps.get-renode-rev.outputs.action-rev }}
+      if: ${{ steps.restore-cache.outputs.cache-hit != 'true' }}
+    - name: Install Robot framework dependencies
+      run: python3 -m pip install -r tests/requirements.txt
+      shell: bash
+      working-directory: ${{ runner.temp }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}
+    - name: Install Robot framework dependencies under py on Windows
+      run: py -3 -m pip install -r tests/requirements.txt
+      shell: bash
+      working-directory: ${{ runner.temp }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}
+      if: ${{ runner.os == 'Windows' }}
+    - name: Setup environment (Linux/macOS)
+      run: |
+        echo "${{ runner.temp }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}" >> "$GITHUB_PATH"
+        echo "RENODE_ROOT=${{ runner.temp }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}" >> "$GITHUB_ENV"
+      shell: bash
+      if: ${{ runner.os != 'Windows' }}
+    - name: Setup environment (Windows)
+      run: |
+        echo "${{ runner.temp }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}/bin" >> "$GITHUB_PATH"
+        echo "RENODE_ROOT=${{ runner.temp }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}" >> "$GITHUB_ENV"
+      shell: bash
+      if: ${{ runner.os == 'Windows' }}
     - run: $GITHUB_ACTION_PATH/src/run_renode_test.sh
       shell: bash
       env:
-        RENODE_VERSION: ${{ inputs.renode-version }}
         TESTS_TO_RUN: ${{ inputs.tests-to-run }}
-        RENODE_RUN_DIR: ${{ inputs.renode-run-path }}
         RENODE_ARGUMENTS: ${{ inputs.renode-arguments }}
         ARTIFACTS_PATH: ${{ inputs.artifacts-path }}
         EXECUTION_METRICS: ${{ inputs.gather-execution-metrics }}

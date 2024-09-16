@@ -12,7 +12,7 @@ jobs:
         uses: ./
 
       - name: Verify if Renode is persistent
-        run: renode-run exec -- --version | grep "Renode found" || exit 1
+        run: renode --version | grep "Renode v" || exit 1
         shell: bash
 
       - name: Run sample test
