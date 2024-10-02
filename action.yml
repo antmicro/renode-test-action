@@ -87,7 +87,7 @@ runs:
         export PATH="$PATH:$(cygpath "$(dirname "$msbuild")"):$PWD"
         export MSYS=winsymlinks:nativestrict
         ./build.sh
-        cp $GITHUB_ACTION_PATH/src/renode_test_override.sh renode-test
+        cp $GITHUB_ACTION_PATH/src/renode_test_windows.sh renode-test
       shell: bash
       working-directory: ${{ runner.temp }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}
       if: ${{ env.RENODE_ROOT == '' && runner.os == 'Windows' && steps.restore-cache.outputs.cache-hit != 'true' }}
