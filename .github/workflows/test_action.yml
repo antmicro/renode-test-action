@@ -1,6 +1,18 @@
 name: Test action
 
-on: [push,pull_request,workflow_dispatch]
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      renode_revision:
+        description: 'Renode git revision'
+        required: false
+        default: ''
+      renode_repository:
+        description: 'Renode git repository'
+        required: false
+        default: ''
 
 jobs:
   test:
@@ -13,6 +25,9 @@ jobs:
 
       - name: Download Renode
         uses: ./
+        with:
+          renode-revision: ${{ inputs.renode_revision || 'master' }}
+          renode-repository: ${{ inputs.renode_repository || 'https://github.com/renode/renode' }}
 
       - name: Verify if Renode is persistent
         run: renode --version | grep "Renode v" || exit 1
@@ -21,14 +36,18 @@ jobs:
       - name: Run sample test
         uses: ./
         with:
-           tests-to-run:  __tests__/hello_world.robot
+          tests-to-run:  __tests__/hello_world.robot
+          renode-revision: ${{ inputs.renode_revision || 'master' }}
+          renode-repository: ${{ inputs.renode_repository || 'https://github.com/renode/renode' }}
 
       - name: Run sample test with metrics visualization
         uses: ./
         with:
-           tests-to-run:  __tests__/profiling.robot
-           artifacts-path: metrics
-           gather-execution-metrics: yes
+          tests-to-run:  __tests__/profiling.robot
+          artifacts-path: metrics
+          gather-execution-metrics: yes
+          renode-revision: ${{ inputs.renode_revision || 'master' }}
+          renode-repository: ${{ inputs.renode_repository || 'https://github.com/renode/renode' }}
 
       - name: Upload results with metrics
         uses: actions/upload-artifact@v4
