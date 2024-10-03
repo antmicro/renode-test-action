@@ -1,0 +1,27 @@
+name: Build and test Zephyr app
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Zephyr project
+        uses: zephyrproject-rtos/action-zephyr-setup@v1
+        with:
+          app-path: zephyr-app
+          toolchains: riscv64-zephyr-elf
+
+      - name: Build app
+        working-directory: zephyr-app
+        run: west build -p -b hifive_unmatched src/
+
+      - name: Run test in Renode
+        uses: antmicro/renode-test-action@v4
+        with:
+          tests-to-run: zephyr-app/tests/*.robot
