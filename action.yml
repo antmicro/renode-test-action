@@ -15,6 +15,10 @@ inputs:
     description: 'Renode git repository'
     required: true
     default: 'https://github.com/renode/renode'
+  renode-resource-repository:
+    description: 'Renode binary resources git repository'
+    required: true
+    default: 'https://github.com/renode/renode-resources'
   tests-to-run:
     description: 'Robot framework test paths'
     required: false
@@ -42,9 +46,10 @@ runs:
         action_hash_key=0
         echo "renode-rev=$rev" >> "$GITHUB_OUTPUT"
         echo "action-hash-key=$action_hash_key" >> "$GITHUB_OUTPUT"
+        git clone "${{ inputs.renode-resource-repository }}" renode/lib/resources
         mv renode "renode-$rev-cloned"
       shell: bash
-      working-directory: ${{ runner.temp }}
+      working-directory: ${{ github.workspace }}
       # Avoid the download/build steps if Renode is already installed. We can't just put all of the build steps
       # into a nested composite action as it wouldn't be available when using this action from another repository.
       # See https://github.com/orgs/community/discussions/66094
@@ -52,14 +57,14 @@ runs:
     - uses: actions/cache/restore@v4
       id: restore-cache
       with:
-        path: ${{ runner.temp }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}
+        path: ${{ github.workspace }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}
         key: renode-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-renode-rev.outputs.renode-rev }}-${{ steps.get-renode-rev.outputs.action-hash-key }}
       if: ${{ env.RENODE_ROOT == '' }}
     # Remove the just-cloned source if a cached build was found
     - run: |
         rm -rf renode-${{ steps.get-renode-rev.outputs.renode-rev }}-cloned
       shell: bash
-      working-directory: ${{ runner.temp }}
+      working-directory: ${{ github.workspace }}
       if: ${{ env.RENODE_ROOT == '' && steps.restore-cache.outputs.cache-hit == 'true' }}
     - run: |
         mv renode-${{ steps.get-renode-rev.outputs.renode-rev }}-cloned renode-${{ steps.get-renode-rev.outputs.renode-rev }}
@@ -67,7 +72,7 @@ runs:
         echo Building "${{ inputs.renode-repository }}" at "${{ inputs.renode-revision }} (${{ steps.get-renode-rev.outputs.renode-rev }})"
         git submodule update --init --recursive --depth=1
       shell: bash
-      working-directory: ${{ runner.temp }}
+      working-directory: ${{ github.workspace }}
       if: ${{ env.RENODE_ROOT == '' && steps.restore-cache.outputs.cache-hit != 'true' }}
     - name: Install dependencies (Linux)
       run: |
@@ -79,7 +84,7 @@ runs:
       run: |
         ./build.sh
       shell: bash
-      working-directory: ${{ runner.temp }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}
+      working-directory: ${{ github.workspace }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}
       if: ${{ env.RENODE_ROOT == '' && runner.os != 'Windows' && steps.restore-cache.outputs.cache-hit != 'true' }}
     - name: Build Renode (Windows)
       run: |
@@ -89,34 +94,34 @@ runs:
         ./build.sh
         cp $GITHUB_ACTION_PATH/src/renode_test_windows.sh renode-test
       shell: bash
-      working-directory: ${{ runner.temp }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}
+      working-directory: ${{ github.workspace }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}
       if: ${{ env.RENODE_ROOT == '' && runner.os == 'Windows' && steps.restore-cache.outputs.cache-hit != 'true' }}
     - name: Delete files to slim down cache
       run: |
         find . -name .git -exec rm -rf '{}' '+'
         find lib src '(' -name bin -or -name obj ')' -exec rm -rf '{}' '+'
       shell: bash
-      working-directory: ${{ runner.temp }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}
+      working-directory: ${{ github.workspace }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}
       if: ${{ env.RENODE_ROOT == '' && steps.restore-cache.outputs.cache-hit != 'true' }}
     - uses: actions/cache/save@v4
       with:
-        path: ${{ runner.temp }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}
+        path: ${{ github.workspace }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}
         key: renode-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-renode-rev.outputs.renode-rev }}-${{ steps.get-renode-rev.outputs.action-hash-key }}
       if: ${{ env.RENODE_ROOT == '' && steps.restore-cache.outputs.cache-hit != 'true' }}
     - name: Install Robot framework dependencies
       run: python3 -m pip install -r tests/requirements.txt
       shell: bash
-      working-directory: ${{ runner.temp }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}
+      working-directory: ${{ github.workspace }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}
       if: ${{ env.RENODE_ROOT == '' }}
     - name: Install Robot framework dependencies under py on Windows
       run: py -3 -m pip install -r tests/requirements.txt
       shell: bash
-      working-directory: ${{ runner.temp }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}
+      working-directory: ${{ github.workspace }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}
       if: ${{ env.RENODE_ROOT == '' && runner.os == 'Windows' }}
     - name: Setup environment
       run: |
-        echo "${{ runner.temp }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}" >> "$GITHUB_PATH"
-        echo "RENODE_ROOT=${{ runner.temp }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}" >> "$GITHUB_ENV"
+        echo "${{ github.workspace }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}" >> "$GITHUB_PATH"
+        echo "RENODE_ROOT=${{ github.workspace }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}" >> "$GITHUB_ENV"
       shell: bash
       if: ${{ env.RENODE_ROOT == '' }}
     - run: $GITHUB_ACTION_PATH/src/run_renode_test.sh
