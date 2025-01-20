@@ -72,12 +72,12 @@ runs:
     - name: Install dependencies (Linux)
       run: |
         sudo apt-get -qqy update
-        sudo apt-get -y install --no-install-recommends mono-complete policykit-1 libgtk2.0-dev uml-utilities gtk-sharp2
+        sudo apt-get -y install --no-install-recommends git automake cmake autoconf libtool g++ coreutils policykit-1 libgtk3.0-dev uml-utilities gtk-sharp3 python3 python3-pip dotnet-sdk-8.0
       shell: bash
       if: ${{ env.RENODE_ROOT == '' && runner.os == 'Linux' }}
-    - name: Build Renode - Mono (Linux and MacOS)
+    - name: Build Renode
       run: |
-        ./build.sh
+        ./build.sh --net
       shell: bash
       working-directory: ${{ runner.temp }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}
       if: ${{ env.RENODE_ROOT == '' && runner.os != 'Windows' && steps.restore-cache.outputs.cache-hit != 'true' }}
@@ -86,7 +86,7 @@ runs:
         msbuild="$(vswhere -latest -requires Microsoft.Component.MSBuild -find 'MSBuild\**\Bin\MSBuild.exe' | tr '\\' '/')"
         export PATH="$PATH:$(cygpath "$(dirname "$msbuild")"):$PWD"
         export MSYS=winsymlinks:nativestrict
-        ./build.sh
+        ./build.sh --net
         cp $GITHUB_ACTION_PATH/src/renode_test_windows.sh renode-test
       shell: bash
       working-directory: ${{ runner.temp }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}
