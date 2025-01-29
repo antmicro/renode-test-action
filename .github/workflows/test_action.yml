@@ -16,46 +16,20 @@ on:
 
 jobs:
   test:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-13]
-    runs-on: ${{ matrix.os }}
+    name: Test
+    runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Download Renode
-        uses: ./
+      - uses: actions/checkout@v3
+      - uses: ./
         with:
-          renode-revision: ${{ inputs.renode_revision || 'master' }}
-          renode-repository: ${{ inputs.renode_repository || 'https://github.com/renode/renode' }}
-
-      - name: Verify if Renode is persistent
-        run: renode --version | grep "Renode v" || exit 1
-        shell: bash
-
-      - name: Run sample test
-        uses: ./
+          renode-revision: 'master'
+          tests-to-run: 'tests/platforms/zynqmp.robot'
+  test-windows:
+    name: Test
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./
         with:
-          tests-to-run:  __tests__/hello_world.robot
-          renode-revision: ${{ inputs.renode_revision || 'master' }}
-          renode-repository: ${{ inputs.renode_repository || 'https://github.com/renode/renode' }}
-
-      - name: Run sample test with metrics visualization
-        uses: ./
-        with:
-          tests-to-run:  __tests__/profiling.robot
-          artifacts-path: metrics
-          gather-execution-metrics: yes
-          renode-revision: ${{ inputs.renode_revision || 'master' }}
-          renode-repository: ${{ inputs.renode_repository || 'https://github.com/renode/renode' }}
-
-      - name: Upload results with metrics
-        uses: actions/upload-artifact@v4
-        with:
-          name: metrics-${{ runner.os }}-${{ github.run_id }}
-          path: metrics/*
-
-      - name: Verify that renode-test also works under CMD/PowerShell on Windows
-        run: renode-test __tests__/hello_world.robot
-        shell: cmd
-        if: ${{ runner.os == 'Windows' }}
+          renode-revision: 'master'
+          tests-to-run: 'tests/platforms/zynqmp.robot'

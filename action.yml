@@ -36,6 +36,8 @@ runs:
     - id: get-renode-rev
       run: |
         git clone "${{ inputs.renode-repository }}" renode
+        echo "testing symlinks"
+        ls -la renode/src/Plugins/SystemCPlugin/SystemCModule/lib/socket-cpp
         git -C renode checkout "${{ inputs.renode-revision }}" --
         rev="$(git -C renode rev-parse @)"
         # Increment to force cache invalidation.
