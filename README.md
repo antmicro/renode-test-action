@@ -32,6 +32,7 @@ steps:
 * `renode-arguments` - optional, additional arguments passed to Renode. See [Renode README](https://github.com/renode/renode) for details. Default: no additional arguments.
 * `artifacts-path` - optional, path where  test artifacts should be stored. This includes Robot logs and HTML reports. Default: current directory.
 * `gather-execution-metrics` - optional, whether to gather and visualize execution metrics. Default: no.
+* `install-dependencies` - optional, whether to install dependencies before building Renode (requires sudo privileges, Linux specific). Default: yes.
 
 ## Using cache
 
