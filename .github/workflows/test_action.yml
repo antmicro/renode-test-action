@@ -59,3 +59,47 @@ jobs:
         run: renode-test __tests__/hello_world.robot
         shell: cmd
         if: ${{ runner.os == 'Windows' }}
+
+  test-install-dependencies-input:
+    strategy:
+      matrix:
+        inputs-install-dependencies: ['true', 'false']
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Try to build Renode
+        id: try_build_renode
+        uses: ./
+        with:
+          renode-revision: ${{ inputs.renode_revision || 'master' }}
+          renode-repository: ${{ inputs.renode_repository || 'https://github.com/renode/renode' }}
+          install-dependencies: 'false'
+        if: ${{ matrix.inputs-install-dependencies != 'true' }}
+        continue-on-error: true
+
+      - name: Check build status
+        if: ${{ matrix.inputs-install-dependencies != 'true' && steps.try_build_renode.outcome != 'failure' }}
+        run: exit 1
+
+      - name: Preinstall dependencies
+        run: |
+          source ubuntu-dependencies
+          sudo apt-get -qqy update
+          sudo apt-get -y install --no-install-recommends git automake cmake autoconf libtool g++ coreutils policykit-1 libgtk-3-dev uml-utilities gtk-sharp3 python3 python3-pip dotnet-sdk-8.0
+        shell: bash
+        if: ${{ matrix.inputs-install-dependencies != 'true' }}
+
+      - name: Build Renode
+        uses: ./
+        with:
+          renode-revision: ${{ inputs.renode_revision || 'master' }}
+          renode-repository: ${{ inputs.renode_repository || 'https://github.com/renode/renode' }}
+          install-dependencies: ${{ matrix.inputs-install-dependencies }}
+
+      - name: Run sample test
+        uses: ./
+        with:
+          tests-to-run:  __tests__/hello_world.robot
+          renode-revision: ${{ inputs.renode_revision || 'master' }}
+          renode-repository: ${{ inputs.renode_repository || 'https://github.com/renode/renode' }}
