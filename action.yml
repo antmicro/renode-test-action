@@ -33,7 +33,7 @@ inputs:
   install-dependencies:
     description: 'Install dependencies before building Renode (requires sudo privileges, Linux specific)'
     required: false
-    default: 'true'
+    default: 'yes'
   disable-summary-generation:
     description: 'Disables step summary generation'
     required: false
@@ -83,7 +83,7 @@ runs:
         sudo apt-get -qqy update
         sudo apt-get -y install --no-install-recommends ${RENODE_DEPENDENCIES[@]}
       shell: bash
-      if: ${{ inputs.install-dependencies == 'true' && env.RENODE_ROOT == '' && runner.os == 'Linux' }}
+      if: ${{ inputs.install-dependencies == 'yes' && env.RENODE_ROOT == '' && runner.os == 'Linux' }}
     - name: Verify dependencies (Linux)
       run: |
         source ubuntu-dependencies
@@ -94,7 +94,7 @@ runs:
         done
         exit $fail
       shell: bash
-      if: ${{ inputs.install-dependencies != 'true' && env.RENODE_ROOT == '' && runner.os == 'Linux' }}
+      if: ${{ inputs.install-dependencies != 'yes' && env.RENODE_ROOT == '' && runner.os == 'Linux' }}
     - name: Build Renode
       run: |
         ./build.sh --net
