@@ -33,6 +33,7 @@ steps:
 * `artifacts-path` - optional, path where  test artifacts should be stored. This includes Robot logs and HTML reports. Default: current directory.
 * `gather-execution-metrics` - optional, whether to gather and visualize execution metrics. Default: no.
 * `install-dependencies` - optional, whether to install dependencies before building Renode (requires sudo privileges, Linux specific). Default: yes.
+* `disable-summary-generation` - optional, whether to disable step summary generation. Default: no.
 
 ## Using cache
 

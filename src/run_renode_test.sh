@@ -29,7 +29,10 @@ then
 else
     renode-test -r $ARTIFACTS_PATH "${renode_arguments[@]}" $TESTS_TO_RUN
     TEST_RESULT=$?
-    ./src/results.py $ARTIFACTS_PATH/robot_output.xml $PWD >> $GITHUB_STEP_SUMMARY
+    if [ -z "$RENODE_NO_STEP_SUMMARY" ]
+    then
+        ./src/results.py $ARTIFACTS_PATH/robot_output.xml $PWD >> $GITHUB_STEP_SUMMARY
+    fi
 fi
 
 echo "::remove-matcher owner=test-in-renode::"

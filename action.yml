@@ -34,6 +34,10 @@ inputs:
     description: 'Install dependencies before building Renode (requires sudo privileges, Linux specific)'
     required: false
     default: 'true'
+  disable-summary-generation:
+    description: 'Disables step summary generation'
+    required: false
+    default: 'no'
 runs:
   using: "composite"
   steps:
@@ -142,3 +146,4 @@ runs:
         RENODE_ARGUMENTS: ${{ inputs.renode-arguments }}
         ARTIFACTS_PATH: ${{ inputs.artifacts-path }}
         EXECUTION_METRICS: ${{ inputs.gather-execution-metrics }}
+        RENODE_NO_STEP_SUMMARY: ${{ inputs.disable-summary-generation == 'yes' && '1' || '' }}
