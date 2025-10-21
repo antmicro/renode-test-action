@@ -102,4 +102,16 @@ jobs:
         with:
           tests-to-run:  __tests__/hello_world.robot
           renode-revision: ${{ inputs.renode_revision || 'master' }}
+          renode-repository: ${{ inputs.renode_repository || 'https://github.com/renode/renode' }}\
+
+  test-disable-summary-generation-input:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run sample test
+        uses: ./
+        with:
+          tests-to-run:  __tests__/hello_world.robot
+          renode-revision: ${{ inputs.renode_revision || 'master' }}
           renode-repository: ${{ inputs.renode_repository || 'https://github.com/renode/renode' }}
+          disable-summary-generation: 'yes'
