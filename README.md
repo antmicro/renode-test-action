@@ -18,7 +18,7 @@ See [action.yml](action.yml)
 
 ```yaml
 steps:
-- uses: antmicro/renode-test-action@v4
+- uses: antmicro/renode-test-action@v5
   with:
     renode-revision: 'master'
     tests-to-run: 'tests/**/*.robot'
