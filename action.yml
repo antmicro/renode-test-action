@@ -97,7 +97,7 @@ runs:
       if: ${{ inputs.install-dependencies != 'yes' && env.RENODE_ROOT == '' && runner.os == 'Linux' }}
     - name: Build Renode
       run: |
-        ./build.sh --net
+        ./build.sh
       shell: bash
       working-directory: ${{ github.workspace }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}
       if: ${{ env.RENODE_ROOT == '' && runner.os != 'Windows' && steps.restore-cache.outputs.cache-hit != 'true' }}
@@ -106,7 +106,7 @@ runs:
         msbuild="$(vswhere -latest -requires Microsoft.Component.MSBuild -find 'MSBuild\**\Bin\MSBuild.exe' | tr '\\' '/')"
         export PATH="$PATH:$(cygpath "$(dirname "$msbuild")"):$PWD"
         export MSYS=winsymlinks:nativestrict
-        ./build.sh --net
+        ./build.sh
         cp $GITHUB_ACTION_PATH/src/renode_test_windows.sh renode-test
       shell: bash
       working-directory: ${{ github.workspace }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}
