@@ -80,6 +80,10 @@ runs:
     - name: Install dependencies (Linux)
       run: |
         source $GITHUB_ACTION_PATH/ubuntu-dependencies
+        # Ubuntu 22.04 has .NET 10 only in Canonical's .NET backports repository.
+        if [ "$(. /etc/os-release && echo "$VERSION_ID")" = 22.04 ]; then
+          sudo add-apt-repository --yes ppa:dotnet/backports &> /dev/null
+        fi
         sudo apt-get -qqy update &> /dev/null
         sudo apt-get -y install --no-install-recommends ${RENODE_DEPENDENCIES[@]} &> /dev/null
       shell: bash
