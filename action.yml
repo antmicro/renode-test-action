@@ -60,7 +60,7 @@ runs:
     - uses: actions/cache/restore@v4
       id: restore-cache
       with:
-        path: ${{ runner.temp }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}
+        path: ${{ github.workspace }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}
         key: renode-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-renode-rev.outputs.renode-rev }}-${{ steps.get-renode-rev.outputs.action-hash-key }}
       if: ${{ env.RENODE_ROOT == '' }}
     # Remove the just-cloned source if a cached build was found
@@ -122,15 +122,20 @@ runs:
       shell: bash
       working-directory: ${{ runner.temp }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}
       if: ${{ env.RENODE_ROOT == '' && steps.restore-cache.outputs.cache-hit != 'true' }}
+    # Move the built Renode into the workspace, because Renode resolves relative paths, such as `../file.elf` in
+    # `renode-arguments`, against its root directory. Only the build needs the short path of the temporary directory.
+    - run: |
+        mv renode-${{ steps.get-renode-rev.outputs.renode-rev }} "$GITHUB_WORKSPACE"
+      shell: bash
+      working-directory: ${{ runner.temp }}
+      if: ${{ env.RENODE_ROOT == '' && steps.restore-cache.outputs.cache-hit != 'true' }}
     - uses: actions/cache/save@v4
       with:
-        path: ${{ runner.temp }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}
+        path: ${{ github.workspace }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}
         key: renode-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-renode-rev.outputs.renode-rev }}-${{ steps.get-renode-rev.outputs.action-hash-key }}
       if: ${{ env.RENODE_ROOT == '' && steps.restore-cache.outputs.cache-hit != 'true' }}
     - name: Install uv
       uses: astral-sh/setup-uv@v7
-      with:
-        cache-dependency-glob: ${{ runner.temp }}/renode-*/**/*requirements*.txt
     - name: Install requirements
       shell: bash
       run: |
@@ -142,12 +147,12 @@ runs:
           source .venv/bin/activate
         fi
         uv pip install -r tests/requirements.txt
-      working-directory: ${{ runner.temp }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}
+      working-directory: ${{ github.workspace }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}
       if: ${{ env.RENODE_ROOT == '' }}
     - name: Setup environment
       run: |
-        echo "${{ runner.temp }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}" >> "$GITHUB_PATH"
-        echo "RENODE_ROOT=${{ runner.temp }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}" >> "$GITHUB_ENV"
+        echo "${{ github.workspace }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}" >> "$GITHUB_PATH"
+        echo "RENODE_ROOT=${{ github.workspace }}/renode-${{ steps.get-renode-rev.outputs.renode-rev }}" >> "$GITHUB_ENV"
       shell: bash
       if: ${{ env.RENODE_ROOT == '' }}
     - run: $GITHUB_ACTION_PATH/src/run_renode_test.sh
